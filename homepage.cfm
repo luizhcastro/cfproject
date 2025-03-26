@@ -6,28 +6,29 @@
     <head>
         <title>DBC Saúde</title>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="_css/styles_homepage.css">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     </head>
     <body>
         <main>
-            <h1>
-                DBC Saúde
-            </h1>
-            <a href="consultas_agendadas.cfm">
-                <h2>Consultas agendadas</h2>
+            <h1>DBC Saúde</h1>
+            
+            <a href="consultas_agendadas.cfm" class="consultas-link">
+                Consultas Agendadas
             </a>
-            <h3>
-                Clique no médico para realizar um agendamento.
-            </h3>
+
+            <h3>Clique no médico para realizar um agendamento.</h3>
+            
+            <div class="medicos-container">
                 <cfoutput query="listarMedicos">
-                    <ul>
-                        <li class="imagem">
-                            <a href="agendamento.cfm?id_medico=#listarMedicos.id_medico#">
-                                <img src="#listarMedicos.imagem#" alt="#listarMedicos.nome#">
-                            </a>
-                        </li>
-                        <li><h3>#listarMedicos.nome#</h3></li>
-                        <li>#listarMedicos.crm#</li>
-                    </ul>
+                    <div class="medico-card">
+                        <a href="agendamento.cfm?id_medico=#listarMedicos.id_medico#">
+                            <img src="#listarMedicos.imagem#" alt="#listarMedicos.nome#">
+                        </a>
+                        <h3>#listarMedicos.nome#</h3>
+                        <p>#listarMedicos.crm#</p>
+                    </div>
                 </cfoutput>
             </div>    
         </main>    

@@ -1,0 +1,151 @@
+:root {
+    /* Variáveis de cores */
+    --primary: #2c3e50;
+    --secondary: #3498db;
+    --accent: #e63946;
+    --text: #333333;
+    --light-text: #767676;
+    --border: #e1e1e1;
+    --shadow: rgba(0, 0, 0, 0.05);
+  
+    /* Tipografia */
+    --font-main: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-heading: "Montserrat", sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: #f4f6f7;
+}
+
+main {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+h1 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin-bottom: 3rem;
+    background-color: var(--secondary);
+    padding: 15px;
+    border-radius: 10px;
+    position: relative;
+}
+
+h1::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8rem;
+    height: 3px;
+    background-color: var(--accent);
+}
+
+h2, h3 {
+    font-family: var(--font-heading);
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.consultas-link {
+    display: block;
+    text-align: center;
+    background-color: var(--secondary);
+    color: white;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    margin: 2rem auto;
+    max-width: 300px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.consultas-link:hover {
+    background-color: var(--primary);
+    transform: translateY(-5px);
+}
+
+.medicos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.medico-card {
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px var(--shadow);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.medico-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.medico-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.medico-card:hover img {
+    transform: scale(1.05);
+}
+
+.medico-card h3 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.8rem;
+}
+
+.medico-card p {
+    text-align: center;
+    color: var(--light-text);
+    margin-bottom: 1rem;
+}
+
+@media screen and (max-width: 768px) {
+    .medicos-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.medico-card {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+    animation-delay: calc(var(--animation-order) * 0.1s);
+}
