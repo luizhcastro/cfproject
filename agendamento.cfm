@@ -13,7 +13,7 @@
                     day(form.data_consulta), 
                     listFirst(form.hora_consulta, ':'), 
                     listLast(form.hora_consulta, ':'), 0)>
-    </cfif>
+</cfif>
 
     <cfinvoke component="med_project.components" method="realizarFluxoCompletoDeAgendarNovaConsulta" returnvariable="msg">
         <cfinvokeargument name="cpf" value="#form.cpf#">
