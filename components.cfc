@@ -24,7 +24,6 @@
                 WHERE id_medico = <cfqueryparam value="#ARGUMENTS.idMedico#" cfsqltype="cf_sql_integer">
             </cfquery>
         </cfif>
-
         <cfreturn qMedicoPorId>
     </cffunction>
 
@@ -133,4 +132,14 @@
 
         <cfreturn qConsultas>
     </cffunction>
+
+    <cffunction name="getPacientes" returntype="Query">
+        <cfquery datasource="#this.projetoDB#" name="qPaciente">
+            SELECT id_paciente, cpf, nome, telefone FROM pacientes
+        </cfquery>
+
+        <cfreturn qPaciente>
+    </cffunction>
+
+
 </cfcomponent>
