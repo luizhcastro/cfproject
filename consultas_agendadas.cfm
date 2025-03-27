@@ -119,7 +119,6 @@
                     </div>
                     
                     <div class="consultas-body">
-                        <!--- Formulário de busca --->
                         <form action="consultas_agendadas.cfm?action=search" method="post" class="mb-5">
                             <div class="form-row">
                                 <div class="form-group">
@@ -139,7 +138,6 @@
                             </div>
                         </form>
 
-                        <!--- Mensagens de feedback --->
                         <cfif isDefined("variables.msg")>
                             <div class="message <cfif findNoCase('sucesso', msg)>success<cfelse>error</cfif>">
                                 <div class="message-icon">
@@ -193,13 +191,11 @@
                                             </td>
                                             <td>
                                                 <div class="flex gap-sm">
-                                                    <!--- Botão Editar --->
                                                     <button type="button" class="btn btn-sm btn-outline" 
                                                             onclick="openEditModal(#listarConsultas.id_consulta#, #listarConsultas.id_medico#, '#dateFormat(listarConsultas.horario, "yyyy-mm-dd")#', '#timeFormat(listarConsultas.horario, "HH:mm")#')">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
                                                     
-                                                    <!--- Botão Excluir --->
                                                     <a href="consultas_agendadas.cfm?action=delete&id=#listarConsultas.id_consulta#" 
                                                     class="btn btn-sm btn-outline" 
                                                     onclick="return confirm('Tem certeza que deseja excluir esta consulta?')">
@@ -214,7 +210,6 @@
                         </table>
                     </div>
 
-                    <!--- Modal de Edição --->
                     <div id="editModal" class="modal hidden">
                         <div class="modal-content">
                             <span class="close-modal" onclick="closeEditModal()">&times;</span>
@@ -260,7 +255,6 @@
                     </div>
 
                     <script>
-                        // Funções para o modal de edição
                         function openEditModal(idConsulta, idMedico, dataConsulta, horaConsulta) {
                             document.getElementById('edit_id_consulta').value = idConsulta;
                             document.getElementById('id_medico_edicao').value = idMedico;
@@ -273,7 +267,6 @@
                             document.getElementById('editModal').classList.add('hidden');
                         }
                         
-                        // Fechar modal ao clicar fora
                         window.onclick = function(event) {
                             const modal = document.getElementById('editModal');
                             if (event.target === modal) {
@@ -283,7 +276,6 @@
                     </script>
 
                     <style>
-                        /* Estilos para o modal */
                         .modal {
                             display: flex;
                             position: fixed;
