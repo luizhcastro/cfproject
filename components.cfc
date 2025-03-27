@@ -140,6 +140,76 @@
 
         <cfreturn qPaciente>
     </cffunction>
+    
+    <cffunction name="searchConsultas" returntype="Query">
+        <cfargument name="searchTerm" type="string" required="false" default="">
+        
+        <cfquery datasource="#this.projetoDB#" name="qSearchConsultas">
+            SELECT c.* 
+            FROM consultas c
+            LEFT JOIN pacientes p ON c.id_paciente = p.id_paciente
+            LEFT JOIN medicos m ON c.id_medico = m.id_medico
+            WHERE 
+                p.nome LIKE <cfqueryparam value="%#ARGUMENTS.searchTerm#%" cfsqltype="cf_sql_varchar">
+                OR p.cpf LIKE <cfqueryparam value="%#ARGUMENTS.searchTerm#%" cfsqltype="cf_sql_varchar">
+                OR m.nome LIKE <cfqueryparam value="%#ARGUMENTS.searchTerm#%" cfsqltype="cf_sql_varchar">
+                OR m.crm LIKE <cfqueryparam value="%#ARGUMENTS.searchTerm#%" cfsqltype="cf_sql_varchar">
+                OR DATE_FORMAT(c.horario, '%d/%m/%Y') LIKE <cfqueryparam value="%#ARGUMENTS.searchTerm#%" cfsqltype="cf_sql_varchar">
+        </cfquery>
+        
+        <cfreturn qSearchConsultas>
+    </cffunction>
+
+    <cffunction name="updateConsulta" returntype="String">
+        <cfargument name="idConsulta" required="true">
+        <cfargument name="idMedico" required="true">
+        <cfargument name="dataHora" required="true">
+        
+        <cfset erro = 0>
+        <cftry>
+            <cfquery datasource="#this.projetoDB#">
+                UPDATE consultas
+                SET 
+                    id_medico = <cfqueryparam value="#ARGUMENTS.idMedico#" cfsqltype="cf_sql_integer">,
+                    horario = <cfqueryparam value="#ARGUMENTS.dataHora#" cfsqltype="cf_sql_timestamp">
+                WHERE id_consulta = <cfqueryparam value="#ARGUMENTS.idConsulta#" cfsqltype="cf_sql_integer">
+            </cfquery>
+        <cfcatch type="any">
+            <cfset erro = 1>
+        </cfcatch>
+        </cftry>
+        
+        <cfif erro eq 0>
+            <cfset msg = "Consulta atualizada com sucesso!">
+        <cfelse>
+            <cfset msg = "Ocorreu um erro ao atualizar a consulta">
+        </cfif>
+        
+        <cfreturn msg>
+    </cffunction>
+
+    <cffunction name="deleteConsulta" returntype="String">
+        <cfargument name="idConsulta" required="true">
+        
+        <cfset erro = 0>
+        <cftry>
+            <cfquery datasource="#this.projetoDB#">
+                DELETE FROM consultas
+                WHERE id_consulta = <cfqueryparam value="#ARGUMENTS.idConsulta#" cfsqltype="cf_sql_integer">
+            </cfquery>
+        <cfcatch type="any">
+            <cfset erro = 1>
+        </cfcatch>
+        </cftry>
+        
+        <cfif erro eq 0>
+            <cfset msg = "Consulta excluída com sucesso!">
+        <cfelse>
+            <cfset msg = "Ocorreu um erro ao excluir a consulta">
+        </cfif>
+        
+        <cfreturn msg>
+    </cffunction>
 
 
 </cfcomponent>

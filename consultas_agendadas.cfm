@@ -1,8 +1,44 @@
 <cfset setLocale("pt_BR")>
 
-<cfinvoke component="med_project.components" method="getConsultas" returnvariable="listarConsultas">
-<cfinvoke component="med_project.components" method="getPacientes" returnvariable="listarPacientes">
-<cfinvoke component="med_project.components" method="getMedicos" returnvariable="listarMedicos">
+<cfif isDefined("url.action")>
+    <cfswitch expression="#url.action#">
+        <cfcase value="search">
+            <cfinvoke component="med_project.components" method="searchConsultas" returnvariable="listarConsultas">
+                <cfinvokeargument name="searchTerm" value="#form.searchTerm#">
+            </cfinvoke>
+        </cfcase>
+        
+        <cfcase value="edit">
+            <cfif isDefined("form.enviar_edicao")>
+                <cfset dataHoraConsulta = createDateTime(
+                    year(form.data_consulta_edicao), 
+                    month(form.data_consulta_edicao), 
+                    day(form.data_consulta_edicao), 
+                    listFirst(form.hora_consulta_edicao, ':'), 
+                    listLast(form.hora_consulta_edicao, ':'), 
+                    0
+                )>
+                
+                <cfinvoke component="med_project.components" method="updateConsulta" returnvariable="msg">
+                    <cfinvokeargument name="idConsulta" value="#form.id_consulta#">
+                    <cfinvokeargument name="idMedico" value="#form.id_medico_edicao#">
+                    <cfinvokeargument name="dataHora" value="#dataHoraConsulta#">
+                </cfinvoke>
+            </cfif>
+        </cfcase>
+        
+        <cfcase value="delete">
+            <cfinvoke component="med_project.components" method="deleteConsulta" returnvariable="msg">
+                <cfinvokeargument name="idConsulta" value="#url.id#">
+            </cfinvoke>
+        </cfcase>
+    </cfswitch>
+<cfelse>
+    <cfinvoke component="med_project.components" method="getConsultas" returnvariable="listarConsultas" />
+</cfif>
+
+<cfinvoke component="med_project.components" method="getPacientes" returnvariable="listarPacientes" />
+<cfinvoke component="med_project.components" method="getMedicos" returnvariable="listarMedicos" />
 
 <cfset mapaPacientes = structNew()>
 <cfloop query="listarPacientes">
@@ -74,7 +110,6 @@
                             </div>
                             Agenda de Consultas
                         </h3>
-                        
                         <div class="consultas-actions">
                             <a href="homepage.cfm" class="btn btn-primary">
                                 <i class="fas fa-plus"></i>
@@ -84,49 +119,52 @@
                     </div>
                     
                     <div class="consultas-body">
+                        <!--- Formulário de busca --->
+                        <form action="consultas_agendadas.cfm?action=search" method="post" class="mb-5">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="searchTerm">Buscar Consultas</label>
+                                    <i class="fas fa-search form-input-icon"></i>
+                                    <input type="text" id="searchTerm" name="searchTerm" class="form-input" 
+                                        placeholder="Buscar por médico, paciente, CPF, CRM ou data">
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary" style="margin-top: 1.8rem;">
+                                        <i class="fas fa-search"></i> Buscar
+                                    </button>
+                                    <a href="consultas_agendadas.cfm" class="btn btn-outline" style="margin-top: 1.8rem;">
+                                        <i class="fas fa-sync-alt"></i> Limpar
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!--- Mensagens de feedback --->
+                        <cfif isDefined("variables.msg")>
+                            <div class="message <cfif findNoCase('sucesso', msg)>success<cfelse>error</cfif>">
+                                <div class="message-icon">
+                                    <i class="<cfif findNoCase('sucesso', msg)>fas fa-check-circle<cfelse>fas fa-exclamation-circle</cfif>"></i>
+                                </div>
+                                <div class="message-content">
+                                    <h4 class="message-title">
+                                        <cfif findNoCase('sucesso', msg)>Sucesso<cfelse>Erro</cfif>
+                                    </h4>
+                                    <p class="message-text">
+                                        <cfoutput>#msg#</cfoutput>
+                                    </p>
+                                </div>
+                            </div>
+                        </cfif>
+
                         <table class="consultas-table">
                             <thead>
                                 <tr>
-                                    <th>
-                                        <div class="flex items-center gap-sm">
-                                            <div class="consultas-table-icon">
-                                                <i class="fas fa-hashtag"></i>
-                                            </div>
-                                            ID
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center gap-sm">
-                                            <div class="consultas-table-icon">
-                                                <i class="fas fa-hashtag"></i>
-                                            </div>
-                                            Prossifional
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center gap-sm">
-                                            <div class="consultas-table-icon">
-                                                <i class="fas fa-hashtag"></i>
-                                            </div>
-                                            Paciente
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center gap-sm">
-                                            <div class="consultas-table-icon">
-                                                <i class="fas fa-calendar-alt"></i>
-                                            </div>
-                                            Data e Hora
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="flex items-center gap-sm">
-                                            <div class="consultas-table-icon">
-                                                <i class="fas fa-info-circle"></i>
-                                            </div>
-                                            Status
-                                        </div>
-                                    </th>
+                                    <th>ID</th>
+                                    <th>Profissional</th>
+                                    <th>Paciente</th>
+                                    <th>Data e Hora</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -153,20 +191,139 @@
                                                     ✅ Agendada
                                                 </span>
                                             </td>
+                                            <td>
+                                                <div class="flex gap-sm">
+                                                    <!--- Botão Editar --->
+                                                    <button type="button" class="btn btn-sm btn-outline" 
+                                                            onclick="openEditModal(#listarConsultas.id_consulta#, #listarConsultas.id_medico#, '#dateFormat(listarConsultas.horario, "yyyy-mm-dd")#', '#timeFormat(listarConsultas.horario, "HH:mm")#')">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    
+                                                    <!--- Botão Excluir --->
+                                                    <a href="consultas_agendadas.cfm?action=delete&id=#listarConsultas.id_consulta#" 
+                                                    class="btn btn-sm btn-outline" 
+                                                    onclick="return confirm('Tem certeza que deseja excluir esta consulta?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
                                         </tr>
                                     </cfoutput>
                                 </cfloop>
                             </tbody>
                         </table>
-                        
-                        <div class="consultas-pagination">
-                            <div class="consultas-pagination-item active">1</div>
-                            <div class="consultas-pagination-item">2</div>
-                            <div class="consultas-pagination-item">3</div>
-                            <div class="consultas-pagination-item">
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+                    </div>
+
+                    <!--- Modal de Edição --->
+                    <div id="editModal" class="modal hidden">
+                        <div class="modal-content">
+                            <span class="close-modal" onclick="closeEditModal()">&times;</span>
+                            <h3>Editar Consulta</h3>
+                            
+                            <form action="consultas_agendadas.cfm?action=edit" method="post">
+                                <input type="hidden" name="id_consulta" id="edit_id_consulta">
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="id_medico_edicao">Médico</label>
+                                    <select id="id_medico_edicao" name="id_medico_edicao" class="form-input form-select" required>
+                                        <option value="">Selecione o médico</option>
+                                        <cfoutput query="listarMedicos">
+                                            <option value="#listarMedicos.id_medico#">Dr. #listarMedicos.nome# - #listarMedicos.crm#</option>
+                                        </cfoutput>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="data_consulta_edicao">Data da Consulta</label>
+                                        <input type="date" id="data_consulta_edicao" name="data_consulta_edicao" class="form-input"
+                                            required min="#dateFormat(now(), 'yyyy-mm-dd')#">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="hora_consulta_edicao">Horário</label>
+                                        <input type="time" id="hora_consulta_edicao" name="hora_consulta_edicao" class="form-input"
+                                            required min="08:00" max="18:00" step="1800">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-footer">
+                                    <button type="submit" name="enviar_edicao" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Salvar Alterações
+                                    </button>
+                                    <button type="button" class="btn btn-outline" onclick="closeEditModal()">
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
+                    </div>
+
+                    <script>
+                        // Funções para o modal de edição
+                        function openEditModal(idConsulta, idMedico, dataConsulta, horaConsulta) {
+                            document.getElementById('edit_id_consulta').value = idConsulta;
+                            document.getElementById('id_medico_edicao').value = idMedico;
+                            document.getElementById('data_consulta_edicao').value = dataConsulta;
+                            document.getElementById('hora_consulta_edicao').value = horaConsulta;
+                            document.getElementById('editModal').classList.remove('hidden');
+                        }
+                        
+                        function closeEditModal() {
+                            document.getElementById('editModal').classList.add('hidden');
+                        }
+                        
+                        // Fechar modal ao clicar fora
+                        window.onclick = function(event) {
+                            const modal = document.getElementById('editModal');
+                            if (event.target === modal) {
+                                closeEditModal();
+                            }
+                        }
+                    </script>
+
+                    <style>
+                        /* Estilos para o modal */
+                        .modal {
+                            display: flex;
+                            position: fixed;
+                            z-index: var(--z-modal);
+                            left: 0;
+                            top: 0;
+                            width: 100%;
+                            height: 100%;
+                            background-color: rgba(0, 0, 0, 0.5);
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        
+                        .modal-content {
+                            background-color: white;
+                            padding: var(--spacing-xl);
+                            border-radius: var(--radius-lg);
+                            width: 100%;
+                            max-width: 600px;
+                            box-shadow: var(--shadow-xl);
+                            position: relative;
+                        }
+                        
+                        .close-modal {
+                            position: absolute;
+                            top: var(--spacing-md);
+                            right: var(--spacing-md);
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            color: var(--text-tertiary);
+                        }
+                        
+                        .close-modal:hover {
+                            color: var(--text-primary);
+                        }
+                        
+                        .hidden {
+                            display: none;
+                        }
+                    </style>
                     </div>
                 </div>
             </div>
